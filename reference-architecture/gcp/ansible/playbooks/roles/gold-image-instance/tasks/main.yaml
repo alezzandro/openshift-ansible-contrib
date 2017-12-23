@@ -57,7 +57,34 @@
       - docker
       - iptables-services
       - rng-tools
+      - atomic-openshift-clients
+      - httpd-tools
       state: present
+
+  - name: enable docker service at boot
+    service:
+      name: docker
+      enabled: yes
+
+  - name: creates /root/bin directory
+    file: path=/root/bin state=directory
+
+  - name: creates /var/lib/origin/openshift.local.data directory
+    file: path=/var/lib/origin/openshift.local.data state=directory recurse=yes
+
+  - name: create and set exec mode to clusterup script
+    file: path=/root/bin/clusterup state=touch mode=0700
+
+  - name: append the clusterup command
+    lineinfile:
+      path: /root/bin/clusterup
+      line: 'oc cluster up --host-data-dir=/var/lib/origin/openshift.local.data --use-existing-config --public-hostname=$OCPHOST --routing-suffix=apps.$OCPHOST'
+
+  - name: add the local insecure registry for openshift
+    replace:
+      path: /etc/containers/registries.conf
+      regexp: '\[registries.insecure\]\nregistries = \[\]'
+      replace: '[registries.insecure]\nregistries = ["172.30.0.0/16"]'
 
   - name: add disk_setup to cloud_config_modules
     lineinfile:

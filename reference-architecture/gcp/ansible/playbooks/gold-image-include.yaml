@@ -17,6 +17,9 @@
       host: '{{ hostvars[prefix + "-tmp-instance"]["gce_public_ip"] }}'
       port: 22
       state: started
+  - name: wait extra 30 seconds before trying connect to instance
+    pause:
+      seconds: 30
 
 - name: modify temp instance
   hosts: '{{ prefix }}-tmp-instance'

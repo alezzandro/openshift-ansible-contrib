@@ -18,3 +18,4 @@
     type: A
   - record: '*.{{ wildcard_zone }}'
     type: CNAME
+  ignore_errors: yes

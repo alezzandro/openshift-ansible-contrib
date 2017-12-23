@@ -8,6 +8,7 @@
     project_id: '{{ gcloud_project }}'
     state: present
   register: dns_created
+  ignore_errors: yes
 
 - block:
   - name: get ns servers
@@ -18,3 +19,4 @@
     fail:
       msg: "DNS zone '{{ public_hosted_zone }}' didn't exist. It was created, but before the deployment can continue, you have to configure the following NS servers in your domain provider, then run the deployment again: {{ ns_servers.stdout }}"
   when: dns_created | changed
+  ignore_errors: yes
